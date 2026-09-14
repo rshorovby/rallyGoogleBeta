@@ -1,0 +1,6 @@
+{
+  "name": "RallyMind",
+  "description": "Native iOS Tennis Technique Coverage & AI Analysis System for Apple HIG, Liquid Glass, and hardcourt geometry.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

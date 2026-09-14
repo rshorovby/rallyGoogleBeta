@@ -1,0 +1,415 @@
+import { StrokeSegmentData, AnalysisRecord, PlayerProfile } from '../types';
+
+export const PROGRESSED_PROFILE: PlayerProfile = {
+  name: 'Alexei S.',
+  hand: 'Right-handed',
+  dominantGrip: 'Semi-Western Forehand / Two-Handed Backhand',
+  playStyle: 'Aggressive Baseliner • Hardcourt Specialization',
+  totalAnalyses: 14,
+  overallCoverage: 48,
+  telegramLinked: false,
+  telegramCode: '742-891',
+  localDiskUsage: '384 MB (4 cached recordings)',
+};
+
+export const ZERO_PROFILE: PlayerProfile = {
+  name: 'New Player',
+  hand: 'Right-handed',
+  dominantGrip: 'Eastern / Semi-Western',
+  playStyle: 'Technique Baseline Calibration',
+  totalAnalyses: 0,
+  overallCoverage: 0,
+  telegramLinked: false,
+  telegramCode: '918-304',
+  localDiskUsage: '0 MB (No local video files)',
+};
+
+export const PROGRESSED_SEGMENTS: StrokeSegmentData[] = [
+  {
+    id: 'forehand',
+    title: 'Forehand Drive',
+    russianTitle: 'Форхенд',
+    coveragePercent: 68,
+    totalSlots: 3,
+    anchoredSlots: 2,
+    aiSlots: 1,
+    whatToFilmNext: 'Crosscourt top-spin from deep neutral stance (120/240 fps)',
+    recommendedAngle: '45° Rear Right • Hip Height • 15 ft distance',
+    activeSubmissionsCount: 1,
+    slots: [
+      {
+        id: 'fh-1',
+        name: 'Unit Turn & Shoulder Coil',
+        status: 'anchored',
+        metricLabel: 'Torso-Pelvis Separation',
+        score: 8.8,
+      },
+      {
+        id: 'fh-2',
+        name: 'Contact Point Forward',
+        status: 'anchored',
+        metricLabel: 'Lead Distance from Hip',
+        score: 8.4,
+      },
+      {
+        id: 'fh-3',
+        name: 'Lag & Release Extension',
+        status: 'ai',
+        metricLabel: 'Angular Acceleration',
+        score: 7.2,
+      },
+    ],
+  },
+  {
+    id: 'backhand',
+    title: 'Two-Handed Backhand',
+    russianTitle: 'Бэкхенд',
+    coveragePercent: 54,
+    totalSlots: 3,
+    anchoredSlots: 1,
+    aiSlots: 1,
+    whatToFilmNext: 'Down-the-line stroke off rising ball',
+    recommendedAngle: 'Direct Side Baseline (90°) • Knee Level',
+    activeSubmissionsCount: 0,
+    slots: [
+      {
+        id: 'bh-1',
+        name: 'Dominant Hip Rotation',
+        status: 'anchored',
+        metricLabel: 'Hip Clearance',
+        score: 8.1,
+      },
+      {
+        id: 'bh-2',
+        name: 'Non-Dominant Arm Drive',
+        status: 'ai',
+        metricLabel: 'Left Hand Propulsion',
+        score: 6.9,
+      },
+      {
+        id: 'bh-3',
+        name: 'Low-to-High Finish Arc',
+        status: 'empty',
+        metricLabel: 'Shoulder Plane Alignment',
+      },
+    ],
+  },
+  {
+    id: 'serve',
+    title: 'First Serve & Kick',
+    russianTitle: 'Подача',
+    coveragePercent: 42,
+    totalSlots: 3,
+    anchoredSlots: 1,
+    aiSlots: 1,
+    whatToFilmNext: 'Trophy pose apex with focus on knee drive and toss release',
+    recommendedAngle: 'Baseline Rear Center • Eye Level',
+    activeSubmissionsCount: 1,
+    slots: [
+      {
+        id: 'sv-1',
+        name: 'Trophy Position Alignment',
+        status: 'anchored',
+        metricLabel: 'Elbow-Shoulder Line',
+        score: 8.0,
+      },
+      {
+        id: 'sv-2',
+        name: 'Internal Shoulder Pronation',
+        status: 'ai',
+        metricLabel: 'Racket Head Speed',
+        score: 6.4,
+      },
+      {
+        id: 'sv-3',
+        name: 'Landing on Non-Dominant Leg',
+        status: 'empty',
+        metricLabel: 'Deceleration Stance',
+      },
+    ],
+  },
+  {
+    id: 'net',
+    title: 'Net Play & Volleys',
+    russianTitle: 'У сетки',
+    coveragePercent: 30,
+    totalSlots: 3,
+    anchoredSlots: 0,
+    aiSlots: 1,
+    whatToFilmNext: 'Punch forehand volley off mid-pace ball at service line',
+    recommendedAngle: 'Service Line Cross • Chest Height',
+    activeSubmissionsCount: 0,
+    slots: [
+      {
+        id: 'nt-1',
+        name: 'Compact Punch Takeback',
+        status: 'ai',
+        metricLabel: 'Head Stability',
+        score: 7.0,
+      },
+      {
+        id: 'nt-2',
+        name: 'Diagonal Step Into Contact',
+        status: 'empty',
+        metricLabel: 'Linear Momentum Transfer',
+      },
+      {
+        id: 'nt-3',
+        name: 'High Overhead Smash Timing',
+        status: 'empty',
+        metricLabel: 'Scissor-Kick Kinetic',
+      },
+    ],
+  },
+  {
+    id: 'footwork',
+    title: 'Split-Step & Recovery',
+    russianTitle: 'Ноги',
+    coveragePercent: 60,
+    totalSlots: 3,
+    anchoredSlots: 1,
+    aiSlots: 1,
+    whatToFilmNext: 'Lateral wide baseline sprint and open-stance deceleration',
+    recommendedAngle: 'Elevated Behind Baseline • Full Court View',
+    activeSubmissionsCount: 0,
+    slots: [
+      {
+        id: 'ft-1',
+        name: 'Pre-Impact Split Step Timing',
+        status: 'anchored',
+        metricLabel: 'Ground Reaction Time',
+        score: 8.9,
+      },
+      {
+        id: 'ft-2',
+        name: 'Open Stance Loading',
+        status: 'ai',
+        metricLabel: 'Outside Quad Engagement',
+        score: 7.5,
+      },
+      {
+        id: 'ft-3',
+        name: 'Crossover Recovery Step',
+        status: 'empty',
+        metricLabel: 'Center Return Latency',
+      },
+    ],
+  },
+  {
+    id: 'rally',
+    title: 'Live Rally Dynamics',
+    russianTitle: 'Розыгрыш',
+    coveragePercent: 35,
+    totalSlots: 3,
+    anchoredSlots: 0,
+    aiSlots: 1,
+    whatToFilmNext: 'Continuous 6+ shot rally sustaining depth past service line',
+    recommendedAngle: 'High Baseline Corner • Wide Dynamic Angle',
+    activeSubmissionsCount: 0,
+    slots: [
+      {
+        id: 'rl-1',
+        name: 'Depth Consistency Under Pace',
+        status: 'ai',
+        metricLabel: 'Ball Clearance & Spin',
+        score: 6.8,
+      },
+      {
+        id: 'rl-2',
+        name: 'Transition from Defense to Offense',
+        status: 'empty',
+        metricLabel: 'Stance Transformation',
+      },
+      {
+        id: 'rl-3',
+        name: 'Direction Change Balance',
+        status: 'empty',
+        metricLabel: 'Kinetic Re-direction',
+      },
+    ],
+  },
+];
+
+export const ZERO_SEGMENTS: StrokeSegmentData[] = PROGRESSED_SEGMENTS.map(seg => ({
+  ...seg,
+  coveragePercent: 0,
+  anchoredSlots: 0,
+  aiSlots: 0,
+  activeSubmissionsCount: 0,
+  slots: seg.slots.map(s => ({
+    ...s,
+    status: 'empty',
+    score: undefined,
+  })),
+}));
+
+export const SAMPLE_ANALYSIS: AnalysisRecord = {
+  id: 'an-749',
+  stroke: 'forehand',
+  strokeDisplayName: 'Forehand Drive • Crosscourt Heavy Topspin',
+  recordedAt: 'Today, 10:42 AM',
+  localVideoDuration: '00:04.2 (240 fps)',
+  supervisionStatus: 'coach_confirmed',
+  coachName: 'M. Lindner, PTR Pro',
+  overallScore: 8.4,
+  metrics: {
+    contactPoint: 8.8,
+    kineticChain: 8.2,
+    balance: 8.6,
+    coilingAngle: 9.1,
+  },
+  summary:
+    'Clean linear entry into the ball with optimal hip unwinding. The racquet head drops 18cm below the contact plane, yielding a vertical brushing vector of 3,120 RPM.',
+  primaryFocus: 'Wrist lag stabilization during deceleration',
+  whatToFilmNext: 'Down-the-line forehand from open stance under heavy inbound pace.',
+  points: [
+    {
+      id: 'pt-1',
+      pointNumber: 1,
+      title: 'Premature Forearm Pronation on High Ball',
+      issueDescription:
+        'During balls contacted above shoulder height, the wrist collapses 12° forward before full extension through the hitting zone, flattening your trajectory.',
+      correctionDirective:
+        'Maintain the radial angle of the wrist locked through contact; drive finish over the left shoulder rather than wrapping around the ribcage.',
+      kineticsImpact: '+14% margin over the net strap on deep baseline rally shots.',
+    },
+    {
+      id: 'pt-2',
+      pointNumber: 2,
+      title: 'Shoulder-Hip Coil Separation',
+      issueDescription:
+        'Upper torso achieves 88° of rotation while pelvis holds steady at 42°, providing an exceptional elastic kinetic storage in the core.',
+      correctionDirective:
+        'Keep this exact timing anchored. Do not rush early hip opening before the racquet head drops beneath the hip line.',
+      kineticsImpact: 'Solid kinetic transfer verified by coach supervision.',
+    },
+    {
+      id: 'pt-3',
+      pointNumber: 3,
+      title: 'Base Width During Recovery',
+      issueDescription:
+        'Right leg push-off during recovery is slightly narrow (48cm vs recommended 72cm), causing 0.15s delay in tracking back to the center T.',
+      correctionDirective:
+        'Land on the balls of both feet with a wider base immediately following ball strike to facilitate a clean crossover step.',
+      kineticsImpact: 'Faster lateral coverage against opponent counter-punches.',
+    },
+  ],
+};
+
+export const HISTORY_RECORDS: AnalysisRecord[] = [
+  SAMPLE_ANALYSIS,
+  {
+    id: 'an-748',
+    stroke: 'serve',
+    strokeDisplayName: 'Flat First Serve • Deuce Court Wide',
+    recordedAt: 'Yesterday, 4:15 PM',
+    localVideoDuration: '00:05.1 (120 fps)',
+    supervisionStatus: 'ai_verified',
+    overallScore: 7.8,
+    metrics: {
+      contactPoint: 8.0,
+      kineticChain: 7.4,
+      balance: 8.1,
+    },
+    summary:
+      'High toss apex with steady shoulder tilt. Knee flexion reached 48°, but torso uncoiled slightly prior to maximal racquet drop.',
+    primaryFocus: 'Synchronize knee extension with trophy pose apex',
+    whatToFilmNext: 'Kick serve down the T with camera directly behind baseline',
+    points: [
+      {
+        id: 'pt-sv-1',
+        pointNumber: 1,
+        title: 'Toss Height Inconsistency',
+        issueDescription: 'Toss drifted 15cm behind head plane, requiring lumbar arch compensation.',
+        correctionDirective: 'Release ball at eye height with straight left arm aiming at 1 o’clock.',
+        kineticsImpact: 'Eliminates lower back strain and stabilizes first-serve percentage.',
+      },
+    ],
+  },
+  {
+    id: 'an-745',
+    stroke: 'backhand',
+    strokeDisplayName: 'Two-Handed Backhand • Neutral Stance',
+    recordedAt: 'Sep 10, 2026',
+    localVideoDuration: '00:03.8 (240 fps)',
+    supervisionStatus: 'coach_confirmed',
+    coachName: 'M. Lindner, PTR Pro',
+    overallScore: 8.1,
+    metrics: {
+      contactPoint: 8.4,
+      kineticChain: 7.9,
+      balance: 8.2,
+    },
+    summary:
+      'Solid non-dominant arm guidance. Racquet face maintained perpendicular orientation for 0.08s through contact window.',
+    primaryFocus: 'Weight transfer into front right foot on contact',
+    whatToFilmNext: 'High bouncing topspin backhand from deep corner',
+    points: [
+      {
+        id: 'pt-bh-1',
+        pointNumber: 1,
+        title: 'Left Hand Drive Dominance',
+        issueDescription: 'Non-dominant left arm properly handled 72% of the forward impulse.',
+        correctionDirective: 'Maintain current grip pressure ratio: 4/10 right hand, 7/10 left hand.',
+        kineticsImpact: 'Maximum rotational stability on fast court surfaces.',
+      },
+    ],
+  },
+  {
+    id: 'an-741',
+    stroke: 'footwork',
+    strokeDisplayName: 'Lateral Baseline Split-Step & Push',
+    recordedAt: 'Sep 8, 2026',
+    localVideoDuration: '00:06.0 (120 fps)',
+    supervisionStatus: 'coach_confirmed',
+    coachName: 'M. Lindner, PTR Pro',
+    overallScore: 8.9,
+    metrics: {
+      contactPoint: 9.0,
+      kineticChain: 8.7,
+      balance: 9.1,
+    },
+    summary:
+      'Split-step unweighting precisely timed with opponent racquet impact within 42ms. Ground force reaction highly symmetric.',
+    primaryFocus: 'Maintain low center of gravity on deep corner decelerations',
+    whatToFilmNext: 'Approach shot transition into split-step at service line',
+    points: [
+      {
+        id: 'pt-ft-1',
+        pointNumber: 1,
+        title: 'Airborne Phase Synchrony',
+        issueDescription: 'Both feet left the hardcourt exactly as the opposing ball made contact.',
+        correctionDirective: 'Lock this sensory rhythm into muscle memory.',
+        kineticsImpact: 'Benchmark reaction time achieved.',
+      },
+    ],
+  },
+  {
+    id: 'an-736',
+    stroke: 'forehand',
+    strokeDisplayName: 'Inside-Out Forehand • Running Forehand',
+    recordedAt: 'Sep 4, 2026',
+    localVideoDuration: '00:04.5 (240 fps)',
+    supervisionStatus: 'pending_supervisor',
+    overallScore: 7.4,
+    metrics: {
+      contactPoint: 7.1,
+      kineticChain: 7.5,
+      balance: 7.6,
+    },
+    summary:
+      'AI biometric analysis complete. Awaiting supervisor confirmation on dynamic balance recovery.',
+    primaryFocus: 'Angular deceleration of the non-dominant shoulder',
+    whatToFilmNext: 'Stationary inside-in forehand from midcourt',
+    points: [
+      {
+        id: 'pt-fh-run-1',
+        pointNumber: 1,
+        title: 'Head Drift During Contact',
+        issueDescription: 'Eyes tracked target direction 30ms before ball left the stringbed.',
+        correctionDirective: 'Keep chin tucked to hitting shoulder until follow-through completes.',
+        kineticsImpact: 'Prevents miss-hits on high-velocity balls.',
+      },
+    ],
+  },
+];
