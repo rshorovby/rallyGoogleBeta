@@ -9,6 +9,10 @@ import { HistoryScreen } from '../screens/HistoryScreen';
 import { AnalysisScreen } from '../screens/AnalysisScreen';
 import { AnalysisPointModal } from '../screens/AnalysisPointModal';
 import { AccountScreen } from '../screens/AccountScreen';
+import { PlayerProfilePush } from '../screens/PlayerProfilePush';
+import { LinkTelegramPush } from '../screens/LinkTelegramPush';
+import { LanguagePush } from '../screens/LanguagePush';
+import { AboutPush } from '../screens/AboutPush';
 import {
   PROGRESSED_PROFILE,
   PROGRESSED_SEGMENTS,
@@ -121,16 +125,82 @@ export const AllScreensMatrix: React.FC = () => {
     },
     {
       id: 'account',
-      name: '8. Account (Аккаунт)',
-      description: 'Player (read-only), Channels (Telegram code), Appearance (Light/Dark), Session',
+      name: '8. Account Root (Аккаунт)',
+      description: 'Player (read-only), Channels (Telegram + Push), Appearance (Theme + Language), App, Session',
       render: (theme: 'light' | 'dark') => (
         <AccountScreen
           profile={PROGRESSED_PROFILE}
           theme={theme}
+          language="ru"
           onToggleTheme={() => {}}
-          onOpenTelegramCode={() => {}}
+          onToggleNotifications={() => {}}
+          onOpenProfile={() => {}}
+          onOpenLinkTelegram={() => {}}
+          onOpenLanguage={() => {}}
+          onOpenAbout={() => {}}
           onSignOut={() => {}}
           onDeleteAccount={() => {}}
+        />
+      ),
+      hasTabBar: true,
+      activeTab: 'account' as const,
+    },
+    {
+      id: 'account-profile',
+      name: '9. Push: Player Profile (Профиль игрока)',
+      description: '7 read-only fields matching bot onboarding, level label, generic mode note if skipped',
+      render: (theme: 'light' | 'dark') => (
+        <PlayerProfilePush
+          profile={PROGRESSED_PROFILE}
+          theme={theme}
+          language="ru"
+          onBack={() => {}}
+          onFillProfile={() => {}}
+        />
+      ),
+      hasTabBar: true,
+      activeTab: 'account' as const,
+    },
+    {
+      id: 'account-telegram',
+      name: '10. Push: Link Telegram (Привязать Telegram)',
+      description: 'Two-way linking: Code from the bot (text field) & Code for the bot (monospace generator)',
+      render: (theme: 'light' | 'dark') => (
+        <LinkTelegramPush
+          profile={PROGRESSED_PROFILE}
+          theme={theme}
+          language="ru"
+          onBack={() => {}}
+          onLinkSuccess={() => {}}
+        />
+      ),
+      hasTabBar: true,
+      activeTab: 'account' as const,
+    },
+    {
+      id: 'account-language',
+      name: '11. Push: Language (Язык)',
+      description: 'Russian & English selector, immediate interface localization toggle',
+      render: (theme: 'light' | 'dark') => (
+        <LanguagePush
+          theme={theme}
+          language="ru"
+          onBack={() => {}}
+          onSelectLanguage={() => {}}
+        />
+      ),
+      hasTabBar: true,
+      activeTab: 'account' as const,
+    },
+    {
+      id: 'account-about',
+      name: '12. Push: About (О приложении)',
+      description: 'RallyMind 1.0, player channel specification, staff coach stays in Forum',
+      render: (theme: 'light' | 'dark') => (
+        <AboutPush
+          theme={theme}
+          language="ru"
+          onBack={() => {}}
         />
       ),
       hasTabBar: true,

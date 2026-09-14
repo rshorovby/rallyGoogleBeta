@@ -4,6 +4,7 @@
  */
 
 export type ThemeMode = 'light' | 'dark';
+export type AppLanguage = 'ru' | 'en';
 
 export type TabId = 'home' | 'history' | 'account';
 
@@ -15,7 +16,42 @@ export type ScreenId =
   | 'history'
   | 'analysis'
   | 'analysis-detail'
-  | 'account';
+  | 'account'
+  | 'account-profile'
+  | 'account-telegram'
+  | 'account-language'
+  | 'account-about';
+
+export type ProfileLevel = 'beginner' | 'recreational' | 'advanced' | 'competitive';
+export type ProfileHand = 'right' | 'left';
+export type ProfileFrequency = '1' | '2' | '3_4' | '5_plus';
+export type ProfileExperience = 'under_1' | 'y1_3' | 'y3_7' | 'y7_15' | 'y15_plus';
+export type ProfileCoaching = 'individual' | 'group' | 'both' | 'none';
+export type ProfileFocus = 'stability' | 'power' | 'technique' | 'footwork' | 'serve' | 'all';
+export type ProfileState = 'filled' | 'skipped' | 'empty';
+
+export interface PlayerProfile {
+  name: string;
+  hand: 'Right-handed' | 'Left-handed';
+  dominantGrip: string;
+  playStyle: string;
+  totalAnalyses: number;
+  overallCoverage: number; // percentage
+  telegramLinked: boolean;
+  telegramCode?: string;
+  localDiskUsage: string;
+  // iOS v1 Player profile quiz data
+  profileState: ProfileState;
+  level?: ProfileLevel;
+  profileHand?: ProfileHand;
+  frequency?: ProfileFrequency;
+  experience?: ProfileExperience;
+  coaching?: ProfileCoaching;
+  focus?: ProfileFocus;
+  injuries?: string;
+  notificationsEnabled: boolean;
+  telegramAppCode: string;
+}
 
 export type StrokeType =
   | 'forehand'
@@ -79,18 +115,6 @@ export interface AnalysisRecord {
   primaryFocus: string;
   whatToFilmNext: string;
   points: AnalysisObservation[];
-}
-
-export interface PlayerProfile {
-  name: string;
-  hand: 'Right-handed' | 'Left-handed';
-  dominantGrip: string;
-  playStyle: string;
-  totalAnalyses: number;
-  overallCoverage: number; // percentage
-  telegramLinked: boolean;
-  telegramCode?: string;
-  localDiskUsage: string;
 }
 
 export interface IntakeSubmission {

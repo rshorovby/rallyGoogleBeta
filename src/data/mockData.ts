@@ -10,6 +10,17 @@ export const PROGRESSED_PROFILE: PlayerProfile = {
   telegramLinked: false,
   telegramCode: '742-891',
   localDiskUsage: '384 MB (4 cached recordings)',
+  // iOS v1 Player profile quiz data
+  profileState: 'filled',
+  level: 'recreational',
+  profileHand: 'right',
+  frequency: '3_4',
+  experience: 'y3_7',
+  coaching: 'group',
+  focus: 'technique',
+  injuries: '',
+  notificationsEnabled: true,
+  telegramAppCode: 'RM-742891',
 };
 
 export const ZERO_PROFILE: PlayerProfile = {
@@ -22,6 +33,17 @@ export const ZERO_PROFILE: PlayerProfile = {
   telegramLinked: false,
   telegramCode: '918-304',
   localDiskUsage: '0 MB (No local video files)',
+  // iOS v1 Player profile quiz data
+  profileState: 'empty',
+  level: undefined,
+  profileHand: 'right',
+  frequency: undefined,
+  experience: undefined,
+  coaching: undefined,
+  focus: undefined,
+  injuries: undefined,
+  notificationsEnabled: false,
+  telegramAppCode: 'RM-918304',
 };
 
 export const PROGRESSED_SEGMENTS: StrokeSegmentData[] = [

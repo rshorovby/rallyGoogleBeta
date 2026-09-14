@@ -6,6 +6,8 @@
 import React, { useState } from 'react';
 import {
   ThemeMode,
+  AppLanguage,
+  ProfileState,
   TabId,
   ScreenId,
   StrokeType,
@@ -36,6 +38,10 @@ import { HistoryScreen } from './components/screens/HistoryScreen';
 import { AnalysisScreen } from './components/screens/AnalysisScreen';
 import { AnalysisPointModal } from './components/screens/AnalysisPointModal';
 import { AccountScreen } from './components/screens/AccountScreen';
+import { PlayerProfilePush } from './components/screens/PlayerProfilePush';
+import { LinkTelegramPush } from './components/screens/LinkTelegramPush';
+import { LanguagePush } from './components/screens/LanguagePush';
+import { AboutPush } from './components/screens/AboutPush';
 import { IntakeModal } from './components/screens/IntakeModal';
 import { TelegramSyncModal } from './components/screens/TelegramSyncModal';
 
@@ -51,6 +57,9 @@ export default function App() {
 
   // Theme: strictly 'light' | 'dark' (no system option)
   const [theme, setTheme] = useState<ThemeMode>('dark');
+
+  // Interface language: bilingual ru | en (default ru per requirements)
+  const [language, setLanguage] = useState<AppLanguage>('ru');
 
   // Profile data toggle: Progressed vs Zero State
   const [isZeroState, setIsZeroState] = useState<boolean>(false);
@@ -75,14 +84,77 @@ export default function App() {
   const handleToggleState = (zero: boolean) => {
     setIsZeroState(zero);
     if (zero) {
-      setProfile(ZERO_PROFILE);
+      setProfile({
+        ...ZERO_PROFILE,
+        profileState: 'empty',
+        level: undefined,
+        telegramLinked: false,
+        notificationsEnabled: false,
+      });
       setSegments(ZERO_SEGMENTS);
       setHistory([]);
     } else {
-      setProfile(PROGRESSED_PROFILE);
+      setProfile({
+        ...PROGRESSED_PROFILE,
+        profileState: 'filled',
+        level: 'recreational',
+        telegramLinked: false,
+        notificationsEnabled: true,
+      });
       setSegments(PROGRESSED_SEGMENTS);
       setHistory(HISTORY_RECORDS);
     }
+  };
+
+  // Prototype state overrides for Account tab testing
+  const handleSetProfileState = (state: ProfileState) => {
+    if (state === 'filled') {
+      setProfile(prev => ({
+        ...prev,
+        profileState: 'filled',
+        level: 'recreational',
+        profileHand: 'right',
+        frequency: '3_4',
+        experience: 'y3_7',
+        coaching: 'group',
+        focus: 'technique',
+        injuries: '',
+      }));
+    } else if (state === 'skipped') {
+      setProfile(prev => ({
+        ...prev,
+        profileState: 'skipped',
+        level: undefined,
+      }));
+    } else {
+      setProfile(prev => ({
+        ...prev,
+        profileState: 'empty',
+        level: undefined,
+      }));
+    }
+  };
+
+  const handleSetTelegramLinked = (linked: boolean) => {
+    setProfile(prev => ({ ...prev, telegramLinked: linked }));
+  };
+
+  const handleSetNotifications = (enabled: boolean) => {
+    setProfile(prev => ({ ...prev, notificationsEnabled: enabled }));
+  };
+
+  const handleFillProfile = () => {
+    setProfile(prev => ({
+      ...prev,
+      profileState: 'filled',
+      level: 'recreational',
+      profileHand: 'right',
+      frequency: '3_4',
+      experience: 'y3_7',
+      coaching: 'group',
+      focus: 'technique',
+      injuries: '',
+    }));
   };
 
   // Tab navigation
@@ -248,15 +320,15 @@ export default function App() {
           </div>
         </div>
 
-        {/* Global Controls: Theme & Profile State */}
-        <div className="flex items-center gap-3">
+        {/* Global Controls: Theme, Profile, Telegram, Push, Language */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
           {/* Progressed vs Zero State Switcher */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/5 border border-white/10 text-xs">
-            <span className="text-[11px] text-slate-400 px-1 font-mono">State:</span>
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 px-1 font-mono">Dossier:</span>
             <button
               type="button"
               onClick={() => handleToggleState(false)}
-              className={`px-2.5 py-0.5 rounded-lg transition-colors ${
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
                 !isZeroState ? 'bg-white/20 text-white font-medium' : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -265,11 +337,134 @@ export default function App() {
             <button
               type="button"
               onClick={() => handleToggleState(true)}
-              className={`px-2.5 py-0.5 rounded-lg transition-colors ${
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
                 isZeroState ? 'bg-white/20 text-white font-medium' : 'text-slate-400 hover:text-white'
               }`}
             >
               Zero State (0%)
+            </button>
+          </div>
+
+          {/* Account Profile State: filled | skipped | empty */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 px-1 font-mono">Profile:</span>
+            <button
+              id="ctrl-profile-filled"
+              type="button"
+              onClick={() => handleSetProfileState('filled')}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                profile.profileState === 'filled' && profile.level
+                  ? 'bg-blue-600 text-white font-medium'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Filled
+            </button>
+            <button
+              id="ctrl-profile-skipped"
+              type="button"
+              onClick={() => handleSetProfileState('skipped')}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                profile.profileState === 'skipped'
+                  ? 'bg-blue-600 text-white font-medium'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Skipped
+            </button>
+            <button
+              id="ctrl-profile-empty"
+              type="button"
+              onClick={() => handleSetProfileState('empty')}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                profile.profileState === 'empty' || (!profile.level && profile.profileState !== 'skipped')
+                  ? 'bg-blue-600 text-white font-medium'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Empty
+            </button>
+          </div>
+
+          {/* Telegram State: linked | not linked */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 px-1 font-mono">Telegram:</span>
+            <button
+              id="ctrl-telegram-linked"
+              type="button"
+              onClick={() => handleSetTelegramLinked(true)}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                profile.telegramLinked
+                  ? 'bg-emerald-600 text-white font-medium'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Linked
+            </button>
+            <button
+              id="ctrl-telegram-not-linked"
+              type="button"
+              onClick={() => handleSetTelegramLinked(false)}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                !profile.telegramLinked
+                  ? 'bg-white/20 text-white font-medium'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Not Linked
+            </button>
+          </div>
+
+          {/* Notifications State: on | off */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 px-1 font-mono">Push:</span>
+            <button
+              id="ctrl-push-on"
+              type="button"
+              onClick={() => handleSetNotifications(true)}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                profile.notificationsEnabled
+                  ? 'bg-emerald-600 text-white font-medium'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              On
+            </button>
+            <button
+              id="ctrl-push-off"
+              type="button"
+              onClick={() => handleSetNotifications(false)}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                !profile.notificationsEnabled
+                  ? 'bg-white/20 text-white font-medium'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Off
+            </button>
+          </div>
+
+          {/* Language Toggle: RU | EN */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            <button
+              id="ctrl-lang-ru"
+              type="button"
+              onClick={() => setLanguage('ru')}
+              className={`px-2 py-0.5 rounded-lg transition-colors font-mono font-bold ${
+                language === 'ru' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              RU
+            </button>
+            <button
+              id="ctrl-lang-en"
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-2 py-0.5 rounded-lg transition-colors font-mono font-bold ${
+                language === 'en' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              EN
             </button>
           </div>
 
@@ -420,6 +615,70 @@ export default function App() {
             >
               Account (Аккаунт)
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('account');
+                setCurrentScreen('account-profile');
+              }}
+              className={`px-2.5 py-1 rounded-full border transition-all ${
+                currentScreen === 'account-profile'
+                  ? 'bg-blue-600 text-white border-blue-500'
+                  : theme === 'dark'
+                  ? 'bg-white/5 border-white/10 text-slate-300'
+                  : 'bg-white border-slate-300 text-slate-700'
+              }`}
+            >
+              Profile Push
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('account');
+                setCurrentScreen('account-telegram');
+              }}
+              className={`px-2.5 py-1 rounded-full border transition-all ${
+                currentScreen === 'account-telegram'
+                  ? 'bg-blue-600 text-white border-blue-500'
+                  : theme === 'dark'
+                  ? 'bg-white/5 border-white/10 text-slate-300'
+                  : 'bg-white border-slate-300 text-slate-700'
+              }`}
+            >
+              Telegram Push
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('account');
+                setCurrentScreen('account-language');
+              }}
+              className={`px-2.5 py-1 rounded-full border transition-all ${
+                currentScreen === 'account-language'
+                  ? 'bg-blue-600 text-white border-blue-500'
+                  : theme === 'dark'
+                  ? 'bg-white/5 border-white/10 text-slate-300'
+                  : 'bg-white border-slate-300 text-slate-700'
+              }`}
+            >
+              Language Push
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('account');
+                setCurrentScreen('account-about');
+              }}
+              className={`px-2.5 py-1 rounded-full border transition-all ${
+                currentScreen === 'account-about'
+                  ? 'bg-blue-600 text-white border-blue-500'
+                  : theme === 'dark'
+                  ? 'bg-white/5 border-white/10 text-slate-300'
+                  : 'bg-white border-slate-300 text-slate-700'
+              }`}
+            >
+              About Push
+            </button>
           </div>
 
           {/* iPhone 16 Pro Hardware Mockup Frame */}
@@ -447,7 +706,10 @@ export default function App() {
                   theme={theme}
                   onSelectSegment={handleOpenSegment}
                   onOpenIntake={() => handleOpenIntake('forehand')}
-                  onOpenTelegram={() => setShowTelegramModal(true)}
+                  onOpenTelegram={() => {
+                    setActiveTab('account');
+                    setCurrentScreen('account-telegram');
+                  }}
                 />
               )}
 
@@ -492,13 +754,60 @@ export default function App() {
                 <AccountScreen
                   profile={profile}
                   theme={theme}
+                  language={language}
                   onToggleTheme={newTheme => setTheme(newTheme)}
-                  onOpenTelegramCode={() => setShowTelegramModal(true)}
+                  onToggleNotifications={() =>
+                    setProfile(prev => ({ ...prev, notificationsEnabled: !prev.notificationsEnabled }))
+                  }
+                  onOpenProfile={() => setCurrentScreen('account-profile')}
+                  onOpenLinkTelegram={() => setCurrentScreen('account-telegram')}
+                  onOpenLanguage={() => setCurrentScreen('account-language')}
+                  onOpenAbout={() => setCurrentScreen('account-about')}
                   onSignOut={() => setCurrentScreen('signin')}
                   onDeleteAccount={() => {
                     handleToggleState(true);
                     setCurrentScreen('signin');
                   }}
+                />
+              )}
+
+              {currentScreen === 'account-profile' && (
+                <PlayerProfilePush
+                  profile={profile}
+                  theme={theme}
+                  language={language}
+                  onBack={() => setCurrentScreen('account')}
+                  onFillProfile={handleFillProfile}
+                />
+              )}
+
+              {currentScreen === 'account-telegram' && (
+                <LinkTelegramPush
+                  profile={profile}
+                  theme={theme}
+                  language={language}
+                  onBack={() => setCurrentScreen('account')}
+                  onLinkSuccess={() => {
+                    setProfile(prev => ({ ...prev, telegramLinked: true }));
+                    setCurrentScreen('account');
+                  }}
+                />
+              )}
+
+              {currentScreen === 'account-language' && (
+                <LanguagePush
+                  theme={theme}
+                  language={language}
+                  onBack={() => setCurrentScreen('account')}
+                  onSelectLanguage={lang => setLanguage(lang)}
+                />
+              )}
+
+              {currentScreen === 'account-about' && (
+                <AboutPush
+                  theme={theme}
+                  language={language}
+                  onBack={() => setCurrentScreen('account')}
                 />
               )}
 
