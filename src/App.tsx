@@ -195,7 +195,7 @@ export default function App() {
       stroke: submission.stroke,
       strokeDisplayName: `${submission.stroke.toUpperCase()} • ${submission.focusArea}`,
       recordedAt: 'Just now',
-      localVideoDuration: '00:04.0 (240 fps)',
+      localVideoDuration: '00:04.0',
       supervisionStatus: 'ai_verified',
       overallScore: 8.2,
       metrics: {
@@ -222,27 +222,46 @@ export default function App() {
     setActiveAnalysisRecord(newRecord);
     setCurrentScreen('analysis');
 
-    // Update segment coverage if zero state
-    if (isZeroState) {
-      setProfile(prev => ({
-        ...prev,
-        overallCoverage: 16,
-        totalAnalyses: 1,
-        localDiskUsage: '94 MB (1 local recording)',
-      }));
-      setSegments(prev =>
-        prev.map(s =>
-          s.id === submission.stroke
-            ? {
-                ...s,
-                coveragePercent: 33,
-                aiSlots: 1,
-                slots: s.slots.map((sl, idx) => (idx === 0 ? { ...sl, status: 'ai', score: 8.2 } : sl)),
-              }
-            : s
-        )
-      );
-    }
+    // Update segment focus and metrics dynamically upon video upload
+    setSegments(prev =>
+      prev.map(s => {
+        if (s.id === submission.stroke) {
+          const newVideos = (s.videosCount || 0) + 1;
+          const newAngles = Math.min(s.totalAnglesRequired || 4, (s.anglesCoveredCount || 0) + 1);
+          return {
+            ...s,
+            coveragePercent: Math.min(100, Math.max(33, s.coveragePercent + 15)),
+            aiSlots: Math.max(1, s.aiSlots),
+            videosCount: newVideos,
+            anglesCoveredCount: newAngles,
+            currentFocus: {
+              instruction: `Maintain ${submission.focusArea} with high kinetic stability`,
+              russianInstruction: `Контролируй «${submission.focusArea}» до конца проводки`,
+              status: 'active',
+              approvedByCoach: true,
+              coachName: 'M. Lindner, PTR Pro',
+              assignedAt: 'После новой загрузки',
+              aiRationale: 'ИИ скорректировал фокус сегмента по новому видео. Тренер утвердил установку до следующей съемки.',
+              recommendedAngle: s.recommendedAngle,
+            },
+            slots: s.slots.map((sl, idx) =>
+              idx === 0 && sl.status === 'empty'
+                ? { ...sl, status: 'ai', score: 8.2 }
+                : sl
+            ),
+          };
+        }
+        return s;
+      })
+    );
+
+    // Update player profile coverage and count
+    setProfile(prev => ({
+      ...prev,
+      overallCoverage: Math.min(100, Math.max(16, prev.overallCoverage + 10)),
+      totalAnalyses: prev.totalAnalyses + 1,
+      localDiskUsage: `${(prev.totalAnalyses + 1) * 94} MB (${prev.totalAnalyses + 1} local recordings)`,
+    }));
   };
 
   // Delete local video from this iPhone
@@ -704,8 +723,11 @@ export default function App() {
                   profile={profile}
                   segments={segments}
                   theme={theme}
+                  language={language}
+                  latestAnalysis={history[0]}
+                  onSelectAnalysis={handleOpenAnalysis}
                   onSelectSegment={handleOpenSegment}
-                  onOpenIntake={() => handleOpenIntake('forehand')}
+                  onOpenIntake={(stroke) => handleOpenIntake(stroke || 'forehand')}
                   onOpenTelegram={() => {
                     setActiveTab('account');
                     setCurrentScreen('account-telegram');

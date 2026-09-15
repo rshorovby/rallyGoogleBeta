@@ -104,7 +104,7 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({
             />
             <div className="flex justify-between text-[9px] font-mono text-slate-300">
               <span>00:01.8 (Impact Point)</span>
-              <span>240 fps Telemetry</span>
+              <span>AI Telemetry</span>
             </div>
           </div>
         </div>

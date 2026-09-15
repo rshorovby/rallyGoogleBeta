@@ -102,7 +102,7 @@ export const IntakeModal: React.FC<IntakeModalProps> = ({
                   isDark ? 'text-slate-400' : 'text-slate-500'
                 }`}
               >
-                1 stroke repetition • 120 or 240 fps slow motion recommended
+                1 stroke repetition • Standard video (3–5s)
               </p>
             </div>
 
@@ -130,7 +130,7 @@ export const IntakeModal: React.FC<IntakeModalProps> = ({
                     isDark ? 'text-slate-400' : 'text-slate-500'
                   }`}
                 >
-                  Direct 120/240 fps hardcourt capture
+                  Direct court video capture
                 </span>
               </div>
             </button>

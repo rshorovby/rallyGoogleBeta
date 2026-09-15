@@ -55,6 +55,7 @@ export const AllScreensMatrix: React.FC = () => {
           profile={PROGRESSED_PROFILE}
           segments={PROGRESSED_SEGMENTS}
           theme={theme}
+          latestAnalysis={SAMPLE_ANALYSIS}
           onSelectSegment={() => {}}
           onOpenIntake={() => {}}
           onOpenTelegram={() => {}}

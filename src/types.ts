@@ -63,6 +63,17 @@ export type StrokeType =
 
 export type SlotStatus = 'empty' | 'ai' | 'anchored';
 
+export interface SegmentFocus {
+  instruction: string;
+  russianInstruction: string;
+  status: 'active' | 'pending_video' | 'empty';
+  approvedByCoach: boolean;
+  coachName?: string;
+  assignedAt?: string;
+  aiRationale?: string;
+  recommendedAngle?: string;
+}
+
 export interface TechniqueSlot {
   id: string;
   name: string;
@@ -83,6 +94,12 @@ export interface StrokeSegmentData {
   recommendedAngle: string;
   slots: TechniqueSlot[];
   activeSubmissionsCount: number;
+  // Dynamic per-segment focus (AI formulated + coach approved, retained until next video)
+  currentFocus?: SegmentFocus;
+  // Technique completeness depth metrics
+  anglesCoveredCount?: number; // e.g., 3 angles
+  totalAnglesRequired?: number; // usually 4 (rear 45°, side 90°, baseline center, dynamic high)
+  videosCount?: number;
 }
 
 export type SupervisionStatus = 'coach_confirmed' | 'ai_verified' | 'pending_supervisor';
