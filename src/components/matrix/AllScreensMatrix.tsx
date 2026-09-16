@@ -13,8 +13,10 @@ import { PlayerProfilePush } from '../screens/PlayerProfilePush';
 import { LinkTelegramPush } from '../screens/LinkTelegramPush';
 import { LanguagePush } from '../screens/LanguagePush';
 import { AboutPush } from '../screens/AboutPush';
+import { SubmissionStatusScreen } from '../screens/SubmissionStatusScreen';
 import {
   PROGRESSED_PROFILE,
+  ZERO_PROFILE,
   PROGRESSED_SEGMENTS,
   SAMPLE_ANALYSIS,
   HISTORY_RECORDS,
@@ -206,6 +208,30 @@ export const AllScreensMatrix: React.FC = () => {
       ),
       hasTabBar: true,
       activeTab: 'account' as const,
+    },
+    {
+      id: 'submission-status',
+      name: '13. Submission Status (Статус заявки)',
+      description: '4-step kinetic pipeline: Queued, Review, Ready, Coach verified; privacy card; and active requests',
+      render: (theme: 'light' | 'dark') => (
+        <SubmissionStatusScreen
+          ticket={{
+            id: 'sub-8492',
+            stroke: 'forehand',
+            strokeTitle: 'Форхенд по линии',
+            step: 'review',
+            createdAt: 'Только что',
+            comment: 'Снимал против подкрученной подачи, обычно не успеваю с разворотом...',
+            durationFormatted: '00:24',
+          }}
+          theme={theme}
+          language="ru"
+          onClose={() => {}}
+          onRecordAnother={() => {}}
+          onViewReport={() => {}}
+        />
+      ),
+      hasTabBar: false,
     },
   ];
 

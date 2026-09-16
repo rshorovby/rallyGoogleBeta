@@ -19,6 +19,7 @@ import {
   Clock,
   HelpCircle,
 } from 'lucide-react';
+import { SubmissionTicket } from '../../types';
 
 interface HomeScreenProps {
   profile: PlayerProfile;
@@ -26,8 +27,10 @@ interface HomeScreenProps {
   theme?: 'light' | 'dark';
   language?: AppLanguage;
   latestAnalysis?: AnalysisRecord;
+  activeSubmission?: SubmissionTicket | null;
   onSelectSegment: (id: StrokeType) => void;
   onOpenIntake: (stroke?: StrokeType) => void;
+  onOpenSubmissionStatus?: () => void;
   onOpenTelegram: () => void;
   onOpenProfile?: () => void;
   onSelectAnalysis?: (record: AnalysisRecord) => void;
@@ -39,8 +42,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   theme = 'dark',
   language = 'ru',
   latestAnalysis,
+  activeSubmission,
   onSelectSegment,
   onOpenIntake,
+  onOpenSubmissionStatus,
   onOpenTelegram,
   onOpenProfile,
   onSelectAnalysis,
@@ -319,6 +324,51 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* 2 Core Scales (Zero baseline) */}
         {renderCleanDualScales()}
 
+        {/* Active Submission Status Tracker Banner */}
+        {activeSubmission && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={onOpenSubmissionStatus}
+            className={`p-3.5 rounded-2xl mb-4 border flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] ${
+              isDark
+                ? 'bg-[#101D1A] border-[#D2FF1F]/30 hover:border-[#D2FF1F]/60 shadow-sm'
+                : 'bg-lime-50/80 border-lime-400/60 hover:border-lime-500 shadow-xs'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-2.5 h-2.5 rounded-full animate-pulse flex-shrink-0"
+                style={{ backgroundColor: isDark ? '#D2FF1F' : '#65A30D' }}
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-xs font-bold ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}
+                  >
+                    {activeSubmission.strokeTitle}
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    {activeSubmission.step === 'queued'
+                      ? isRu ? 'Очередь' : 'Queued'
+                      : activeSubmission.step === 'review'
+                      ? isRu ? 'На ревью' : 'In Review'
+                      : activeSubmission.step === 'report_ready'
+                      ? isRu ? 'Отчёт готов' : 'Ready'
+                      : isRu ? 'Закреплено' : 'Verified'}
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-400 block mt-0.5">
+                  {isRu ? 'Нажми, чтобы отследить статус разбора ➜' : 'Tap to track submission status ➜'}
+                </span>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+          </div>
+        )}
+
         {/* Hero Card: AI Automatic Stroke Detection */}
         <div
           className={`rounded-2xl p-5 mb-4 border relative overflow-hidden ${
@@ -396,36 +446,68 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             {segments.map(s => {
               return (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => onOpenIntake(s.id)}
-                  className={`p-3 rounded-xl text-left border transition-all active:scale-[0.98] flex flex-col justify-between min-h-[80px] ${
+                  className={`p-3 rounded-xl text-left border transition-all active:scale-[0.98] flex flex-col justify-between min-h-[96px] ${
                     isDark
                       ? 'bg-[#0E1726]/70 border-white/[0.05] hover:border-white/15'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
+                      : 'bg-white border-slate-200 hover:border-slate-300 shadow-xs'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-2">
                     <span
-                      className={`text-xs font-bold ${
+                      className={`text-xs font-bold truncate uppercase tracking-wider ${
                         isDark ? 'text-white' : 'text-slate-900'
                       }`}
                     >
                       {s.russianTitle}
                     </span>
-                    <span className="text-[9px] text-slate-400 font-mono">0/4</span>
+                    <span className="text-xs text-slate-500 font-mono flex-shrink-0 ml-1.5">—</span>
                   </div>
-                  <span
-                    className={`text-[10px] ${
-                      isDark ? 'text-slate-400' : 'text-slate-500'
-                    }`}
-                  >
-                    {isRu ? 'Загрузить этот удар' : 'Upload this stroke'}
-                  </span>
+
+                  <div className="space-y-2 w-full">
+                    {/* Progress Bar */}
+                    <div>
+                      <div className="text-[10px] text-slate-400 mb-[4px] leading-none">
+                        {isRu ? 'Прогресс' : 'Progress'}
+                      </div>
+                      <div
+                        className={`w-full h-1.5 rounded-full overflow-hidden ${
+                          isDark ? 'bg-white/10' : 'bg-slate-100'
+                        }`}
+                      >
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: '0%',
+                            backgroundColor: isDark ? '#D2FF1F' : '#84CC16',
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Familiarity Bar */}
+                    <div>
+                      <div className="text-[10px] text-slate-400 mb-[4px] leading-none">
+                        {isRu ? 'Изученность' : 'Coverage'}
+                      </div>
+                      <div
+                        className={`w-full h-1.5 rounded-full overflow-hidden ${
+                          isDark ? 'bg-white/10' : 'bg-slate-100'
+                        }`}
+                      >
+                        <div
+                          className="h-full rounded-full bg-[#EA580C]"
+                          style={{ width: '0%' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </button>
               );
             })}
@@ -491,6 +573,51 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* 2. Чистый стрип двух шкал */}
       {renderCleanDualScales()}
+
+      {/* Active Submission Status Tracker Banner */}
+      {activeSubmission && (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={onOpenSubmissionStatus}
+          className={`p-3.5 rounded-2xl mb-4 border flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] ${
+            isDark
+              ? 'bg-[#101D1A] border-[#D2FF1F]/30 hover:border-[#D2FF1F]/60 shadow-sm'
+              : 'bg-lime-50/80 border-lime-400/60 hover:border-lime-500 shadow-xs'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-2.5 h-2.5 rounded-full animate-pulse flex-shrink-0"
+              style={{ backgroundColor: isDark ? '#D2FF1F' : '#65A30D' }}
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs font-bold ${
+                    isDark ? 'text-white' : 'text-slate-900'
+                  }`}
+                >
+                  {activeSubmission.strokeTitle}
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  {activeSubmission.step === 'queued'
+                    ? isRu ? 'Очередь' : 'Queued'
+                    : activeSubmission.step === 'review'
+                    ? isRu ? 'На ревью' : 'In Review'
+                    : activeSubmission.step === 'report_ready'
+                    ? isRu ? 'Отчёт готов' : 'Ready'
+                    : isRu ? 'Закреплено' : 'Verified'}
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400 block mt-0.5">
+                {isRu ? 'Нажми, чтобы отследить статус разбора ➜' : 'Tap to track submission status ➜'}
+              </span>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+        </div>
+      )}
 
       {/* 3. ЕДИНАЯ ЦЕНТРАЛЬНАЯ КАРТОЧКА: «ФОКУС НА КОРТ» С ТАБАМИ УДАРОВ */}
       <section
@@ -646,7 +773,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <div className="grid grid-cols-2 gap-2.5">
           {segments.map(seg => {
             const avgScore = getSegmentAverageScore(seg);
+            const scoreVal = avgScore ? parseFloat(avgScore) : 0;
+            const scorePercent = avgScore ? Math.round((scoreVal / 10) * 100) : 0;
             const angles = seg.anglesCoveredCount || (seg.coveragePercent > 0 ? 1 : 0);
+            const familiarityPercent = Math.round((angles / 4) * 100);
 
             return (
               <button
@@ -659,62 +789,68 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     : 'bg-white border-slate-200 hover:border-slate-300 shadow-xs'
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span
-                      className={`text-xs font-bold block ${
-                        isDark ? 'text-white' : 'text-slate-900'
-                      }`}
-                    >
-                      {seg.russianTitle}
-                    </span>
-                    <span
-                      className={`text-[10px] block ${
-                        isDark ? 'text-slate-400' : 'text-slate-500'
-                      }`}
-                    >
-                      {seg.title.split(' ')[0]}
-                    </span>
-                  </div>
+                {/* Top: Title in bold + Score */}
+                <div className="flex items-center justify-between mb-2">
+                  <span
+                    className={`text-xs font-bold truncate uppercase tracking-wider ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}
+                  >
+                    {seg.russianTitle}
+                  </span>
 
                   {avgScore ? (
                     <span
-                      className={`text-[11px] font-bold font-mono ${
-                        parseFloat(avgScore) >= 8.0
-                          ? 'text-emerald-400'
-                          : 'text-blue-400'
-                      }`}
+                      className="text-xs font-bold font-mono flex-shrink-0 ml-1.5"
+                      style={{ color: isDark ? '#D2FF1F' : '#65A30D' }}
                     >
-                      {avgScore} ★
+                      {avgScore}
                     </span>
                   ) : (
-                    <span className="text-[10px] text-slate-500 font-mono">—</span>
+                    <span className="text-xs text-slate-500 font-mono flex-shrink-0 ml-1.5">—</span>
                   )}
                 </div>
 
-                {/* Bottom: Clean Angle Indicator Dots (●●○○) */}
-                <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    {[0, 1, 2, 3].map(idx => (
-                      <span
-                        key={idx}
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          idx < angles
-                            ? 'bg-emerald-400'
-                            : isDark
-                            ? 'bg-white/10'
-                            : 'bg-slate-200'
-                        }`}
+                {/* 2 Progress Bars (Прогресс & Изученность) */}
+                <div className="space-y-2 w-full">
+                  {/* Progress bar (Lime / Yellow-green) */}
+                  <div>
+                    <div className="text-[10px] text-slate-400 mb-[4px] leading-none">
+                      {isRu ? 'Прогресс' : 'Progress'}
+                    </div>
+                    <div
+                      className={`w-full h-1.5 rounded-full overflow-hidden ${
+                        isDark ? 'bg-white/10' : 'bg-slate-100'
+                      }`}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${Math.min(100, Math.max(0, scorePercent))}%`,
+                          backgroundColor: isDark ? '#D2FF1F' : '#84CC16',
+                        }}
                       />
-                    ))}
+                    </div>
                   </div>
-                  <span
-                    className={`text-[10px] font-mono ${
-                      isDark ? 'text-slate-400' : 'text-slate-500'
-                    }`}
-                  >
-                    {angles}/4 {isRu ? 'рак.' : 'ang.'}
-                  </span>
+
+                  {/* Familiarity bar (Coral / Orange) */}
+                  <div>
+                    <div className="text-[10px] text-slate-400 mb-[4px] leading-none">
+                      {isRu ? 'Изученность' : 'Coverage'}
+                    </div>
+                    <div
+                      className={`w-full h-1.5 rounded-full overflow-hidden ${
+                        isDark ? 'bg-white/10' : 'bg-slate-100'
+                      }`}
+                    >
+                      <div
+                        className="h-full rounded-full bg-[#EA580C] transition-all duration-500"
+                        style={{
+                          width: `${Math.min(100, Math.max(0, familiarityPercent))}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </button>
             );

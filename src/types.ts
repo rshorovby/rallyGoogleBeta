@@ -16,6 +16,7 @@ export type ScreenId =
   | 'history'
   | 'analysis'
   | 'analysis-detail'
+  | 'submission-status'
   | 'account'
   | 'account-profile'
   | 'account-telegram'
@@ -139,4 +140,20 @@ export interface IntakeSubmission {
   focusArea: string;
   sessionNote: string;
   source: 'camera' | 'photos';
+  isGeneralReview?: boolean;
+  trimDuration?: string;
+}
+
+export type SubmissionStep = 'queued' | 'review' | 'report_ready' | 'coach_verified';
+
+export interface SubmissionTicket {
+  id: string;
+  stroke: StrokeType | 'general';
+  strokeTitle: string;
+  step: SubmissionStep;
+  createdAt: string;
+  comment?: string;
+  durationFormatted: string;
+  isGeneralReview?: boolean;
+  linkedAnalysisId?: string;
 }

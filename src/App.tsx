@@ -15,6 +15,7 @@ import {
   StrokeSegmentData,
   AnalysisRecord,
   IntakeSubmission,
+  SubmissionTicket,
 } from './types';
 import {
   PROGRESSED_PROFILE,
@@ -42,7 +43,8 @@ import { PlayerProfilePush } from './components/screens/PlayerProfilePush';
 import { LinkTelegramPush } from './components/screens/LinkTelegramPush';
 import { LanguagePush } from './components/screens/LanguagePush';
 import { AboutPush } from './components/screens/AboutPush';
-import { IntakeModal } from './components/screens/IntakeModal';
+import { IntakeFlowModal } from './components/screens/IntakeFlowModal';
+import { SubmissionStatusScreen } from './components/screens/SubmissionStatusScreen';
 import { TelegramSyncModal } from './components/screens/TelegramSyncModal';
 
 // Presentation Views
@@ -79,6 +81,15 @@ export default function App() {
   const [showIntake, setShowIntake] = useState<boolean>(false);
   const [intakeDefaultStroke, setIntakeDefaultStroke] = useState<StrokeType>('forehand');
   const [showTelegramModal, setShowTelegramModal] = useState<boolean>(false);
+  const [activeTicket, setActiveTicket] = useState<SubmissionTicket | null>({
+    id: 'sub-8492',
+    stroke: 'forehand',
+    strokeTitle: 'Форхенд по линии',
+    step: 'review',
+    createdAt: 'Только что',
+    comment: 'Снимал против подкрученной подачи, обычно не успеваю с разворотом...',
+    durationFormatted: '00:24',
+  });
 
   // Toggle between Progressed Profile and Zero State
   const handleToggleState = (zero: boolean) => {
@@ -190,13 +201,23 @@ export default function App() {
   // Handle Intake submission (creates local record and updates coverage)
   const handleIntakeSubmit = (submission: IntakeSubmission) => {
     setShowIntake(false);
+
+    const strokeRuNames: Record<StrokeType, string> = {
+      forehand: 'Форхенд по линии',
+      backhand: 'Бэкхенд по диагонали',
+      serve: 'Подача (первая плоская)',
+      net: 'Волей у сетки',
+      footwork: 'Ноги и сплит-степ',
+      rally: 'Розыгрыш на задней линии',
+    };
+
     const newRecord: AnalysisRecord = {
       id: `an-${Date.now().toString().slice(-4)}`,
       stroke: submission.stroke,
       strokeDisplayName: `${submission.stroke.toUpperCase()} • ${submission.focusArea}`,
-      recordedAt: 'Just now',
-      localVideoDuration: '00:04.0',
-      supervisionStatus: 'ai_verified',
+      recordedAt: language === 'ru' ? 'Только что' : 'Just now',
+      localVideoDuration: submission.trimDuration || '00:24',
+      supervisionStatus: 'pending_supervisor',
       overallScore: 8.2,
       metrics: {
         contactPoint: 8.5,
@@ -218,9 +239,24 @@ export default function App() {
       ],
     };
 
+    const newTicket: SubmissionTicket = {
+      id: `sub-${Date.now().toString().slice(-4)}`,
+      stroke: submission.isGeneralReview ? 'general' : submission.stroke,
+      strokeTitle: submission.isGeneralReview
+        ? (language === 'ru' ? 'Общий обзор розыгрыша' : 'General Rally Overview')
+        : (language === 'ru' ? (strokeRuNames[submission.stroke] || submission.stroke) : submission.stroke),
+      step: 'review',
+      createdAt: language === 'ru' ? 'Только что' : 'Just now',
+      comment: submission.sessionNote,
+      durationFormatted: submission.trimDuration || '00:24',
+      isGeneralReview: submission.isGeneralReview,
+      linkedAnalysisId: newRecord.id,
+    };
+
     setHistory([newRecord, ...history]);
     setActiveAnalysisRecord(newRecord);
-    setCurrentScreen('analysis');
+    setActiveTicket(newTicket);
+    setCurrentScreen('submission-status');
 
     // Update segment focus and metrics dynamically upon video upload
     setSegments(prev =>
@@ -725,6 +761,8 @@ export default function App() {
                   theme={theme}
                   language={language}
                   latestAnalysis={history[0]}
+                  activeSubmission={activeTicket}
+                  onOpenSubmissionStatus={() => setCurrentScreen('submission-status')}
                   onSelectAnalysis={handleOpenAnalysis}
                   onSelectSegment={handleOpenSegment}
                   onOpenIntake={(stroke) => handleOpenIntake(stroke || 'forehand')}
@@ -735,10 +773,39 @@ export default function App() {
                 />
               )}
 
+              {currentScreen === 'submission-status' && (
+                <SubmissionStatusScreen
+                  ticket={
+                    activeTicket || {
+                      id: 'sub-8492',
+                      stroke: 'forehand',
+                      strokeTitle: 'Форхенд по линии',
+                      step: 'review',
+                      createdAt: 'Только что',
+                      comment: 'Снимал против подкрученной подачи, обычно не успеваю с разворотом...',
+                      durationFormatted: '00:24',
+                    }
+                  }
+                  theme={theme}
+                  language={language}
+                  onClose={() => setCurrentScreen('home')}
+                  onRecordAnother={() => handleOpenIntake()}
+                  onViewReport={() => {
+                    if (activeAnalysisRecord) {
+                      setCurrentScreen('analysis');
+                    } else if (history.length > 0) {
+                      setActiveAnalysisRecord(history[0]);
+                      setCurrentScreen('analysis');
+                    }
+                  }}
+                />
+              )}
+
               {currentScreen === 'segment' && (
                 <SegmentScreen
                   segment={currentSegment}
                   theme={theme}
+                  language={language}
                   onBack={() => setCurrentScreen('home')}
                   onOpenIntakeForSegment={() => handleOpenIntake(currentSegment.id)}
                   onSelectAnalysis={handleOpenAnalysis}
@@ -836,7 +903,8 @@ export default function App() {
               {/* Persistent Native Tab Bar (Rule: Таббар не прятать на push (сегмент, разбор)) */}
               {currentScreen !== 'splash' &&
                 currentScreen !== 'signin' &&
-                currentScreen !== 'analysis-detail' && (
+                currentScreen !== 'analysis-detail' &&
+                currentScreen !== 'submission-status' && (
                   <div className="absolute bottom-0 left-0 right-0 z-30">
                     <TabBar
                       activeTab={activeTab}
@@ -846,11 +914,12 @@ export default function App() {
                   </div>
                 )}
 
-              {/* Modal Sheet: 3-Step Video Intake */}
+              {/* Modal Sheet: Video Trim & Intake Flow */}
               {showIntake && (
-                <IntakeModal
+                <IntakeFlowModal
                   initialStroke={intakeDefaultStroke}
                   theme={theme}
+                  language={language}
                   onClose={() => setShowIntake(false)}
                   onSubmit={handleIntakeSubmit}
                 />
